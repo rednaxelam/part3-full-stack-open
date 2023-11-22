@@ -26,6 +26,10 @@ let persons = [
   }
 ];
 
+let generateID = () => {
+  return Math.floor(Math.random()*Number.MAX_SAFE_INTEGER);
+}
+
 app.get('/api/persons', (request, response) => {
   response.json(persons);
 })
@@ -55,6 +59,30 @@ app.delete('/api/persons/:id', (request, response) => {
   persons = persons.filter(person => person.id !== id);
   
   response.status(204).end();
+  return;
+})
+
+app.post('/api/persons', (request, response) => {
+  const newPerson = request.body;
+
+  if (!newPerson) {
+    response.status(400).json({error: 'Content missing'});
+    return;
+  } else if (!newPerson.name || newPerson.name.length === 0) {
+    response.status(400).json({error: 'Name missing'});
+    return;
+  } else if (!newPerson.number || newPerson.number.length === 0) {
+    response.status(400).json({error: 'Number missing'});
+    return;
+  } else if (persons.findIndex(person => person.name.toLowerCase() === newPerson.name.toLowerCase()) !== -1) {
+    response.status(400).json({error: 'Person already in phonebook'});
+    return;
+  }
+  
+  newPerson.id = generateID();
+  persons = persons.concat(newPerson);
+
+  response.json(newPerson);
   return;
 })
 
