@@ -1,5 +1,5 @@
 import axios from 'axios';
-const baseURL = 'https://fso-part-3-backend.fly.dev/api/persons';
+const baseURL = '/api/persons';
 
 const createContact = newContact => {
   return axios.post(baseURL, newContact).then(response => response.data);
