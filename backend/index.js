@@ -48,16 +48,14 @@ app.post('/api/persons', (request, response) => {
   } else if (!newPerson.number || newPerson.number.length === 0) {
     response.status(400).json({error: 'Number missing'});
     return;
-  } else if (persons.findIndex(person => person.name.toLowerCase() === newPerson.name.toLowerCase()) !== -1) {
-    response.status(400).json({error: 'Person already in phonebook'});
-    return;
   }
   
-  newPerson.id = generateID();
-  persons = persons.concat(newPerson);
+  const newPersonDoc = new Person({
+    name: newPerson.name,
+    number: newPerson.number,
+  })
 
-  response.json(newPerson);
-  return;
+  newPersonDoc.save().then(savedPerson => response.json(savedPerson));
 })
 
 const unknownEndpoint = (request, response) => {
