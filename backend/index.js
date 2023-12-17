@@ -13,22 +13,22 @@ morgan.token('json-data', (req, res) => JSON.stringify({'name':req.body.name, 'n
 app.post('/api/persons', morgan(':method :url :status :res[content-length] - :response-time ms :json-data'));
 
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => response.json(persons))
+app.get('/api/persons', (request, response, next) => {
+  Person.find({}).then(persons => response.json(persons)).catch(error => next(error));
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   response.send(`
     <p>Phonebook has info for ${persons.length} people</p>
     <p>${new Date()}<p>
   `)
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => response.json(person));
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id).then(person => response.json(person)).catch(error => {console.log(error);next(error);});
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(deletedDocument => {
       response.status(204).end();
@@ -36,7 +36,7 @@ app.delete('/api/persons/:id', (request, response) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const newPerson = request.body;
 
   if (!newPerson) {
@@ -55,7 +55,7 @@ app.post('/api/persons', (request, response) => {
     number: newPerson.number,
   })
 
-  newPersonDoc.save().then(savedPerson => response.json(savedPerson));
+  newPersonDoc.save().then(savedPerson => response.json(savedPerson)).catch(error => next(error));
 })
 
 const unknownEndpoint = (request, response) => {
@@ -63,6 +63,18 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError' && (new RegExp("\/api\/persons\/.*")).test(request.originalUrl)) {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error);
+}
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
