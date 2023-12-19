@@ -19,14 +19,18 @@ app.get('/api/persons', (request, response, next) => {
 })
 
 app.get('/info', (request, response, next) => {
-  response.send(`
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date()}<p>
-  `)
+  Person.countDocuments()
+    .then(count => {
+      response.send(`
+        <p>Phonebook has info for ${count} people</p>
+        <p>${new Date()}<p>
+      `)
+    })
+    .catch(error => next(error));
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-  Person.findById(request.params.id).then(person => response.json(person)).catch(error => {console.log(error);next(error);});
+  Person.findById(request.params.id).then(person => response.json(person)).catch(error => next(error));
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
