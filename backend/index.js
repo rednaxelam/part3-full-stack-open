@@ -4,6 +4,7 @@ const app = express();
 const morgan = require('morgan');
 const cors = require('cors')
 const Person = require('./models/person')
+const mongoose = require('mongoose');
 
 app.use(express.json());
 app.use(cors());
@@ -56,6 +57,14 @@ app.post('/api/persons', (request, response, next) => {
   })
 
   newPersonDoc.save().then(savedPerson => response.json(savedPerson)).catch(error => next(error));
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const updatedPerson = request.body;
+
+  Person.replaceOne({_id: updatedPerson.id}, updatedPerson)
+    .then(metaData => response.json(updatedPerson))
+    .catch(error => next(error));
 })
 
 const unknownEndpoint = (request, response) => {
