@@ -12,7 +12,7 @@
 }
 
 .error-message {
-  background-color: gray;
-  color: red;
+  background-color: lightgrey;
+  color: darkred;
   border-color: red;
 }

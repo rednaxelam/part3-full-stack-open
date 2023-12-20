@@ -26,8 +26,16 @@ const App = () => {
     const contactName = newName;
     const contactPhone = newPhone;
     
-    if (contactName.trim().length === 0) return;
-    if (contactPhone.trim().length === 0) return;
+    if (contactName.trim().length === 0) {
+      setErrorMessage(`Please enter a name`);
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (contactPhone.trim().length === 0) {
+      setErrorMessage(`Please enter a number`);
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
 
     personsService.getAll().then(dbPersons => {
       
@@ -36,27 +44,27 @@ const App = () => {
       
       // the code below is added for the purpose of completing exercise 2.17
 
-      if (contactIndex !== -1 && dbContactIndex === -1) {
-        personsService
-          .amendContactNumber(persons[contactIndex], newPhone)
-          .then(updatedContact => {
-            const newPersonsArray = persons.map(person => (person.id === updatedContact.id) ? updatedContact : person);
-            setPersons(newPersonsArray);
-            setNewName('');
-            setNewPhone('');
-            setSuccessMessage(`${updatedContact.name}'s number has been updated`);
-            setTimeout(() => setSuccessMessage(null), 3000);
-          }).catch( error => {
-            const newPersonsArray = persons.filter(person => person.name !== contactName);
-            setNewName('');
-            setNewPhone('');
-            setErrorMessage(`Information of ${contactName} has already been removed from the server`);
-            setTimeout(() => setErrorMessage(null), 3000);
-            setTimeout(() => setPersons(newPersonsArray), 1000)
-          }
-          )
-        return;
-      }
+      // if (contactIndex !== -1 && dbContactIndex === -1) {
+      //   personsService
+      //     .amendContactNumber(persons[contactIndex], newPhone)
+      //     .then(updatedContact => {
+      //       const newPersonsArray = persons.map(person => (person.id === updatedContact.id) ? updatedContact : person);
+      //       setPersons(newPersonsArray);
+      //       setNewName('');
+      //       setNewPhone('');
+      //       setSuccessMessage(`${updatedContact.name}'s number has been updated`);
+      //       setTimeout(() => setSuccessMessage(null), 3000);
+      //     }).catch( error => {
+      //       const newPersonsArray = persons.filter(person => person.name !== contactName);
+      //       setNewName('');
+      //       setNewPhone('');
+      //       setErrorMessage(`Information of ${contactName} has already been removed from the server`);
+      //       setTimeout(() => setErrorMessage(null), 3000);
+      //       setTimeout(() => setPersons(newPersonsArray), 1000)
+      //     }
+      //     )
+      //   return;
+      // }
 
       // the code above is added for the purpose of completing the exercise
 
@@ -84,6 +92,11 @@ const App = () => {
                 setNewPhone('');
                 setSuccessMessage(`${updatedContact.name}'s number has been updated`);
                 setTimeout(() => setSuccessMessage(null), 3000);
+              })
+              .catch(error => {
+                console.log(error);
+                setErrorMessage(error.response.data.error);
+                setTimeout(() => setErrorMessage(null), 3000);
               });
             return;
           } else {
@@ -103,7 +116,13 @@ const App = () => {
           setNewPhone('');
           setSuccessMessage(`${contactName} has been added to the phonebook`);
           setTimeout(() => setSuccessMessage(null), 3000);
-      })
+        })
+        .catch(error => {
+          console.log(error);
+          console.log('hello');
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => setErrorMessage(null), 3000);
+        });
     })
   }
 
