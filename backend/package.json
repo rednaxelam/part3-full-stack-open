@@ -10,7 +10,8 @@
     "build:ui": "rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend",
     "deploy": "$HOME/.fly/bin/flyctl deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "$HOME/.fly/bin/flyctl logs"
+    "logs:prod": "$HOME/.fly/bin/flyctl logs",
+    "lint": "eslint ."
   },
   "author": "Michael Alexander",
   "license": "MIT",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.4.11",
+    "eslint": "^8.56.0",
     "nodemon": "^3.0.1"
   }
 }
