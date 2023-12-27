@@ -94,7 +94,6 @@ const App = () => {
                 setTimeout(() => setSuccessMessage(null), 3000);
               })
               .catch(error => {
-                console.log(error);
                 setErrorMessage(error.response.data.error);
                 setTimeout(() => setErrorMessage(null), 3000);
               });
@@ -118,8 +117,6 @@ const App = () => {
           setTimeout(() => setSuccessMessage(null), 3000);
         })
         .catch(error => {
-          console.log(error);
-          console.log('hello');
           setErrorMessage(error.response.data.error);
           setTimeout(() => setErrorMessage(null), 3000);
         });
